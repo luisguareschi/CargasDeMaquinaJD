@@ -1,2 +1,5 @@
-SELECT        [Order].*
-FROM            [Order]
+SELECT orders.DeliveryDate, Reference.Code as Reference, orders.CalculatedPendingQty
+FROM [Order] orders
+INNER JOIN Reference
+ON Reference.Id = orders.ReferenceId
+WHERE orders.Active = 1

@@ -1,12 +1,14 @@
 import pandas as pd
 from multiprocessing import Process, Queue, freeze_support
 from Packages.gui.gui import Gui
+import warnings
 
 
 class App:
     def __init__(self):
         """Clase principal donse se ejecuta la aplicacion"""
         pd.options.mode.chained_assignment = None  # Para poder editar tablas en pandas mas facil
+        warnings.filterwarnings("ignore")  # Desactivar warnings de pandas
         freeze_support()
         self.gui = Gui()
         self.gui.create_windows(self.gui)
