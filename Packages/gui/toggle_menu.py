@@ -14,6 +14,8 @@ class ToggleMenu(ttk.Frame):
         self.configure(bootstyle="primary")
         self.button = ttk.Button(self, text='☰', command=self.open_window, padding=5)
         self.button.grid(row=0, column=0, sticky='news')
+        self.open_window()
+        self.close_window()
 
     def open_window(self):
         bstyle = 'success'
@@ -32,10 +34,12 @@ class ToggleMenu(ttk.Frame):
 
     def cargas_maquina_clicked(self):
         self.gui.cargas_maquina_window.tkraise()
-        self.gui.cargas_maquina_window.recalculate()
+        if self.gui.configure_perc_window.table.changes_made:
+            self.gui.cargas_maquina_window.recalculate()
         self.window.destroy()
 
     def ajustes_clicked(self):
         self.gui.configure_perc_window.tkraise()
         self.window.destroy()
+        self.gui.configure_perc_window.table.changes_made = False
 

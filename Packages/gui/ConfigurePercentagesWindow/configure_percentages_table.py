@@ -11,6 +11,7 @@ from Packages.constants import resources_folder
 class ConfigurePercentagesTable(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
+        self.changes_made = False
         # -----------------canvas for scrolling--------------
         self.inner_frame = VerticalScrolledFrame(self)
         self.inner_frame.pack(expand=True, fill='both')
@@ -211,7 +212,7 @@ class ConfigurePercentagesTable(tk.Frame):
         if destination_folder is not None:
             save_file_path = os.path.join(destination_folder, 'master_configuration_table.xlsx')
             self.master_table.to_excel(save_file_path, index=False)
-        print(self.master_table.to_string())
+        self.changes_made = True
 
     def import_settings(self, file_path: str):
         data = pd.read_excel(file_path)

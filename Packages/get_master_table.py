@@ -57,7 +57,7 @@ def get_master_table() -> pd.DataFrame:
 
 if __name__ == '__main__':
     df = get_master_table()
-    df = df.loc[df['ReferenciaSAP'] == 'CE30105']
+    df = df.loc[df['ReferenciaSAP'] == 'DZ102604']
     print(df.to_string())
 
     # celulas = set(df['Celula'].tolist())
