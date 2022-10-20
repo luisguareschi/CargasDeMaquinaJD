@@ -20,6 +20,10 @@ class ConfigurePercentagesWindow(tk.Frame):
         tipos_de_op = list(tipos_de_op)
         tipos_de_op.sort()
         tipos_de_op.append('Ver todos')
+        all_cells = set(self.master_table['Celula'].tolist())
+        all_cells = list(all_cells)
+        all_cells.sort()
+        all_cells.append('Ver todos')
         # -----------------------Filtros-----------------------
         self.filter_frame = ttk.Labelframe(self, text='Ajustes de Filtros', padding=10)
         self.filter_frame.place(relx=.81, rely=0, relheight=.15)
@@ -35,6 +39,11 @@ class ConfigurePercentagesWindow(tk.Frame):
         self.op_type_filter.bind("<<ComboboxSelected>>", self.filter_selected)
         self.op_type_filter.bind('<KeyRelease>', lambda e, lst=tipos_de_op: self.filter_combobox(e, lst))
         self.op_type_filter.grid(row=1, column=1)
+        ttk.Label(self.filter_frame, text='Celula: ').grid(row=2, column=0)
+        self.cell_filter = ttk.Combobox(self.filter_frame, values=all_cells)
+        self.cell_filter.bind("<<ComboboxSelected>>", self.filter_selected)
+        self.cell_filter.bind('<KeyRelease>', lambda e, lst=all_cells: self.filter_combobox(e, lst))
+        self.cell_filter.grid(row=2, column=1)
         # -----------------------Ajustes-----------------------
         self.settings_frame = ttk.Labelframe(self, text='Ajustes', padding=10)
         self.settings_frame.place(relx=.81, rely=.16)
@@ -53,12 +62,15 @@ class ConfigurePercentagesWindow(tk.Frame):
     def filter_selected(self, event=None):
         reference = self.reference_filter.get()
         op_type = self.op_type_filter.get()
+        cell = self.cell_filter.get()
         if reference == 'Ver todos' or reference == '':
             reference = None
         if op_type == 'Ver todos' or op_type == '':
             op_type = None
+        if cell == 'Ver todos' or cell == '':
+            cell = None
         self.table.filter()  # Limpiar filtros anteriores primero
-        self.table.filter(reference=reference, op_type=op_type)
+        self.table.filter(reference=reference, op_type=op_type, selected_cell=cell)
 
     def filter_combobox(self, event, lst):
         value = event.widget.get()

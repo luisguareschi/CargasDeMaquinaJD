@@ -121,8 +121,8 @@ class ConfigurePercentagesTable(tk.Frame):
                         entry.insert(0, '1')
         # pretty(self.widgets_info)
 
-    def filter(self, reference=None, op_type=None):
-        if reference is None and op_type is None:
+    def filter(self, reference=None, op_type=None, selected_cell=None):
+        if reference is None and op_type is None and selected_cell is None:
             for ref in self.widgets_info:
                 for op_t in self.widgets_info[ref]:
                     cb: CellPickComboBox = self.widgets_info[ref][op_t]['combobox']
@@ -173,6 +173,23 @@ class ConfigurePercentagesTable(tk.Frame):
             for ref in self.widgets_info:
                 for op_t in self.widgets_info[ref]:
                     if op_t != op_type:
+                        cb: CellPickComboBox = self.widgets_info[ref][op_t]['combobox']
+                        ref_entry: ttk.Entry = self.widgets_info[ref][op_t]['ref_entry']
+                        op_type_entry: ttk.Entry = self.widgets_info[ref][op_t]['op_type_entry']
+                        cb.grid_remove(), ref_entry.grid_remove(), op_type_entry.grid_remove()
+                        try:
+                            for cell in self.widgets_info[ref][op_t]['labels']:
+                                label: ttk.Label = self.widgets_info[ref][op_t]['labels'][cell]
+                                entry: ttk.Entry = self.widgets_info[ref][op_t]['entries'][cell]
+                                label.grid_remove(), entry.grid_remove()
+                        except KeyError:
+                            pass
+
+        if selected_cell:
+            for ref in self.widgets_info:
+                for op_t in self.widgets_info[ref]:
+                    cells = self.get_cells(ref, op_t)
+                    if selected_cell not in cells:  # Cambiar aqui que se chequee si esa combinacion pertence a la celula
                         cb: CellPickComboBox = self.widgets_info[ref][op_t]['combobox']
                         ref_entry: ttk.Entry = self.widgets_info[ref][op_t]['ref_entry']
                         op_type_entry: ttk.Entry = self.widgets_info[ref][op_t]['op_type_entry']
@@ -237,6 +254,12 @@ class ConfigurePercentagesTable(tk.Frame):
             if perc_entry.get() != '':
                 perc_entry.delete(0, tk.END)
             perc_entry.insert(0, str(porcentaje))
+
+    def get_cells(self, ref, op_type) -> list:
+        row: pd.DataFrame = self.master_table.loc[(self.master_table['ReferenciaSAP'] == ref) &
+                                                  (self.master_table['Tipo de Operacion'] == op_type)]
+        cells = set(row['Celula'].tolist())
+        return list(cells)
 
 
 def pretty(d, indent=0):
