@@ -5,10 +5,15 @@ from Packages.calculate_carga_de_maquina import calculate_carga_de_maquina
 from Packages.gui.CargasDeMaquinaWindow.sort_date import sort_list_by_date
 import datetime as dt
 
+from Packages.gui.ScrollableFrame import VerticalScrolledFrame
+
 
 class NumberOfPiecesTable(ttk.Frame):
     def __init__(self, parent, cargas_de_maq):
         super().__init__(parent)
+        # Crear frame que puede hacer scroll para colocar la tabla de cantidades adentroç
+        self.top_frame = VerticalScrolledFrame(self)
+        self.top_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
         # Variables importantes
         self.cargas_de_maq = cargas_de_maq
         self.celula = '235A'
@@ -23,13 +28,13 @@ class NumberOfPiecesTable(ttk.Frame):
         col = 0
         for head in self.headers:
             lenght = len(head)
-            label = ttk.Label(self, width=int(lenght * 1.5), text=head, bootstyle='inverse-primary', anchor='center')
+            label = ttk.Label(self.top_frame.interior, width=int(lenght * 1.5), text=head, bootstyle='inverse-primary', anchor='center')
             label.grid(row=2, column=col, sticky='ew')
             col += 1
-        self.title_label = tk.Label(self, text=f'CARGAS DE MAQUINA EYE: CELULA {self.celula}',
+        self.title_label = tk.Label(self.top_frame.interior, text=f'CARGAS DE MAQUINA EYE: CELULA {self.celula}',
                                anchor='center', font=('Sans Serif', 20))
         self.title_label.grid(row=0, column=2, columnspan=len(self.all_dates), sticky='we')
-        number_of_parts_label = ttk.Label(self, text='NUMERO DE PIEZAS', anchor='center',
+        number_of_parts_label = ttk.Label(self.top_frame.interior, text='NUMERO DE PIEZAS', anchor='center',
                                           bootstyle='inverse-dark')
         number_of_parts_label.grid(row=1, column=2, columnspan=len(self.all_dates), sticky='we')
         # Variables donde se guardan los widgets
@@ -53,14 +58,14 @@ class NumberOfPiecesTable(ttk.Frame):
         row_n = 3
         for ref in references:
             # Escribir nombre de referencia
-            ref_entry = ttk.Entry(self)
+            ref_entry = ttk.Entry(self.top_frame.interior)
             ref_entry.insert(tk.END, ref)
             ref_entry.configure(state='readonly')
             ref_entry.grid(row=row_n, column=0)
             self.reference_entries[ref] = ref_entry
             # Escribir Hrs STD
             hrs_std = self.selected_df.loc[self.selected_df['ReferenciaSAP'] == ref]['HorasSTD'].values[0]
-            hrs_std_entry = ttk.Entry(self, width=int(len(str(hrs_std)) * 1.2))
+            hrs_std_entry = ttk.Entry(self.top_frame.interior, width=int(len(str(hrs_std)) * 1.2))
             hrs_std_entry.insert(tk.END, hrs_std)
             hrs_std_entry.configure(state='readonly')
             hrs_std_entry.grid(row=row_n, column=1, sticky='ew')
@@ -74,7 +79,7 @@ class NumberOfPiecesTable(ttk.Frame):
                     qty = int(qty['CalculatedQty'][qty.index[0]])
                 except:
                     qty = 'N/A'
-                qty_entry = ttk.Entry(self, width=int(len(str(qty)) * 1.2))
+                qty_entry = ttk.Entry(self.top_frame.interior, width=int(len(str(qty)) * 1.2))
                 qty_entry.insert(tk.END, str(qty))
                 qty_entry.configure(state='readonly')
                 qty_entry.grid(row=row_n, column=2 + col_n, sticky='ew')
@@ -83,7 +88,7 @@ class NumberOfPiecesTable(ttk.Frame):
 
             # Escribir total de cantidades mensuales
             total_qty = self.calculate_total_parts(ref)
-            total_qty_entry = ttk.Entry(self, width=int(len(str(total_qty)) * 1.2))
+            total_qty_entry = ttk.Entry(self.top_frame.interior, width=int(len(str(total_qty)) * 1.2))
             total_qty_entry.insert(tk.END, str(total_qty))
             total_qty_entry.configure(state='readonly')
             total_qty_entry.grid(row=row_n, column=3+col_n, sticky='ew')
@@ -91,7 +96,7 @@ class NumberOfPiecesTable(ttk.Frame):
 
             # Escribir piezas por dia
             parts_per_day = self.calculate_parts_per_day(total_qty)
-            part_per_day_entry = ttk.Entry(self, width=int(len(str(parts_per_day)) * 1.2))
+            part_per_day_entry = ttk.Entry(self.top_frame.interior, width=int(len(str(parts_per_day)) * 1.2))
             part_per_day_entry.insert(tk.END, str(parts_per_day))
             part_per_day_entry.configure(state='readonly')
             part_per_day_entry.grid(row=row_n, column=4 + col_n, sticky='ew')

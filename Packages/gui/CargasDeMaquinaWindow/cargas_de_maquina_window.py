@@ -17,7 +17,7 @@ class CargasDeMaquinaWindow(ttk.Frame):
         self.configure(bootstyle='default')
         self.cargas_maq = calculate_carga_de_maquina()
         self.number_of_pieces_table = NumberOfPiecesTable(self, cargas_de_maq=self.cargas_maq)
-        self.number_of_pieces_table.place(relx=0, rely=0, relwidth=.75)
+        self.number_of_pieces_table.place(relx=0, rely=0, relwidth=.75, relheight=0.5)
         # ------------------------Filtros------------------------
         self.filters_frame = ttk.Labelframe(self, text='Filtros', padding=10)
         self.filters_frame.place(relx=.8, rely=0)
@@ -29,7 +29,7 @@ class CargasDeMaquinaWindow(ttk.Frame):
         self.cell_filter.bind("<<ComboboxSelected>>", self.cell_filter_selected)
         self.cell_filter.bind('<KeyRelease>', lambda e, lst=self.cells: self.filter_combobox(e, lst))
         self.cell_filter.grid(row=0, column=1, sticky='ew')
-        self.cell_filter.set('235A')
+        self.cell_filter.set('105')
         self.cell_filter_selected()
 
     def recalculate(self):
