@@ -3,6 +3,7 @@ from tkinter import ttk
 
 
 class TreeviewEdit(ttk.Treeview):
+    """Class that enables in cell editing of treeviews by clicking on them"""
     def __init__(self, master, **kw):
         self.master = master
         super().__init__(master, **kw)
@@ -52,6 +53,7 @@ class TreeviewEdit(ttk.Treeview):
         self.item(iid, values=current_values)
         event.widget.destroy()
 
+
 if __name__ == '__main__':
     root = tk.Tk()
     column_names = ['vehicle_type', 'vehicle_name', 'year', 'color']
@@ -61,7 +63,7 @@ if __name__ == '__main__':
         tree_view_vehicles.heading(name, text=name)
 
     # agregar datos
-    for i in range(0, 100):
+    for i in range(0, 500):
         tree_view_vehicles.insert(parent='', index=tk.END, values=('Sedan', 'Nissan Versa', '2010', 'Silver'))
         tree_view_vehicles.insert(parent='', index=tk.END, values=('Coupe', 'Toyota Camry', '2022', 'Blue'))
     tree_view_vehicles.place(relx=0, rely=0, relwidth=1, relheight=1)
