@@ -29,7 +29,7 @@ class CargasDeMaquinaWindow(ttk.Frame):
         self.cell_filter.bind("<<ComboboxSelected>>", self.cell_filter_selected)
         self.cell_filter.bind('<KeyRelease>', lambda e, lst=self.cells: self.filter_combobox(e, lst))
         self.cell_filter.grid(row=0, column=1, sticky='ew')
-        self.cell_filter.set('105')
+        self.cell_filter.set('235A')
         self.cell_filter_selected()
 
     def recalculate(self):
