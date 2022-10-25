@@ -2,6 +2,7 @@ import pandas as pd
 from tkinter import ttk
 import tkinter as tk
 from Packages.calculate_carga_de_maquina import calculate_carga_de_maquina
+from Packages.get_labor_days_calendar import get_labor_days_per_month
 from Packages.gui.CargasDeMaquinaWindow.sort_date import sort_list_by_date
 import datetime as dt
 
@@ -17,18 +18,17 @@ class NumberOfPiecesTable(ttk.Frame):
         # Variables importantes
         self.cargas_de_maq = cargas_de_maq
         self.celula = '235A'
-        self.labor_days = {'Nov-22': 17, 'Dic-22': 14, 'Ene-23': 10, 'Feb-23': 12, 'Mar-23': 18, 'Abr-23': 18,
-                           'May-23': 17, 'Jun-23': 20, 'Jul-23': 25, 'Ago-23': 0, 'Sep-23': 18, 'Oct-23': 22}  # Luego se hara automaticamente
         # Obtener titulos de las columnas
         self.all_dates = set(self.cargas_de_maq['Text Fiscal Month'].to_list())
         self.all_dates = list(self.all_dates)
         self.all_dates = sort_list_by_date(self.all_dates)
+        self.labor_days = get_labor_days_per_month(cell=self.celula, months=self.all_dates)
         self.headers = ['REFERENCIA', 'HRS STD'] + self.all_dates + ['TOTAL PZS', 'PIEZAS/DIA', 'TOTAL HRS STD']
         # Insertar titulos de columnas en la gui
         col = 0
         for head in self.headers:
             lenght = len(head)
-            label = ttk.Label(self.top_frame.interior, width=int(lenght * 1.5), text=head, bootstyle='inverse-primary', anchor='center')
+            label = ttk.Label(self.top_frame.interior, width=int(lenght * 1.3), text=head, bootstyle='inverse-primary', anchor='center')
             label.grid(row=2, column=col, sticky='ew')
             col += 1
         self.title_label = tk.Label(self.top_frame.interior, text=f'CARGAS DE MAQUINA EYE: CELULA {self.celula}',
@@ -43,11 +43,13 @@ class NumberOfPiecesTable(ttk.Frame):
         self.number_of_parts_entries = {}
         self.total_parts_entries = {}
         self.parts_per_day_entries = {}
+        self.total_std_entries = {}
 
         # Calcular los datos
         self.calculate_data()
 
     def calculate_data(self):
+        self.labor_days = get_labor_days_per_month(cell=self.celula, months=self.all_dates)
         self.title_label.configure(text=f'CARGAS DE MAQUINA EYE: CELULA {self.celula}')
         # Insertar datos
         self.selected_df: pd.DataFrame = self.cargas_de_maq.loc[self.cargas_de_maq['Celula'] == self.celula]
@@ -68,6 +70,14 @@ class NumberOfPiecesTable(ttk.Frame):
             hrs_std_entry = ttk.Entry(self.top_frame.interior, width=int(len(str(hrs_std)) * 1.2))
             hrs_std_entry.insert(tk.END, hrs_std)
             hrs_std_entry.configure(state='readonly')
+            # -----------------------BIDNINGS (WIP)--------------------------
+            # hrs_std_entry.previous_val = hrs_std_entry.get()
+            # hrs_std_entry.bind('<Double-1>', self.on_double_click)
+            # hrs_std_entry.bind('<FocusOut>', self.on_focus_out)
+            # hrs_std_entry.bind('<Escape>', self.on_focus_out)
+            # hrs_std_entry.bind('<Return>', self.on_enter)
+            self.bind_double_click(hrs_std_entry)
+            # ----------------------------------------------------------
             hrs_std_entry.grid(row=row_n, column=1, sticky='ew')
             self.hrs_std_entries[ref] = hrs_std_entry
             # Escribir las cantidades por mes
@@ -102,6 +112,14 @@ class NumberOfPiecesTable(ttk.Frame):
             part_per_day_entry.grid(row=row_n, column=4 + col_n, sticky='ew')
             self.parts_per_day_entries[ref] = part_per_day_entry
 
+            # Escribir total Horas STD
+            total_std = round((total_qty*hrs_std)/100, 2)
+            total_std_entry = ttk.Entry(self.top_frame.interior, width=int(len(str(total_std)) * 1.2))
+            total_std_entry.insert(tk.END, str(total_std))
+            total_std_entry.configure(state='readonly')
+            total_std_entry.grid(row=row_n, column=5+col_n, sticky='ew')
+            self.total_std_entries[ref] = total_std_entry
+
             # Sumar una fila
             row_n += 1
 
@@ -119,6 +137,8 @@ class NumberOfPiecesTable(ttk.Frame):
             total_qty.grid_forget()
             part_per_day_entry: ttk.Entry = self.parts_per_day_entries[ref]
             part_per_day_entry.grid_forget()
+            total_std_entry: ttk.Entry = self.total_std_entries[ref]
+            total_std_entry.grid_forget()
 
     def calculate_total_parts(self, ref) -> int:
         quantities: dict = self.number_of_parts_entries[ref]
@@ -137,6 +157,28 @@ class NumberOfPiecesTable(ttk.Frame):
         total_days = sum(self.labor_days.values())
         return str(round(total_qty/total_days, 2))
 
+    def on_double_click(self, event):
+        entry: ttk.Entry = event.widget
+        entry.configure(state='default')
+        entry.select_range(0, tk.END)
+
+    def on_focus_out(self, event):
+        entry: ttk.Entry = event.widget
+        entry.delete(0, tk.END)
+        entry.insert(tk.END, entry.previous_val)
+        entry.configure(state='readonly')
+
+    def on_enter(self, event):
+        entry: ttk.Entry = event.widget
+        entry.configure(state='readonly', bootstyle='danger')
+        entry.previous_val = entry.get()
+
+    def bind_double_click(self, entry: ttk.Entry):
+        entry.previous_val = entry.get()
+        entry.bind('<Double-1>', self.on_double_click)
+        entry.bind('<FocusOut>', self.on_focus_out)
+        entry.bind('<Escape>', self.on_focus_out)
+        entry.bind('<Return>', self.on_enter)
 
 if __name__ == '__main__':
     cargas_maq = calculate_carga_de_maquina()
