@@ -93,10 +93,9 @@ def get_orders_table() -> pd.DataFrame:
     # Unir los dos dataframes
     df: pd.DataFrame
     final_df = df.append(df3, ignore_index=True)
-
+    final_df = final_df.groupby(['Fiscal Month', 'Reference']).sum().reset_index()
     # Agregar columna de fechas en texto de mes fiscal
     final_df['Text Fiscal Month'] = final_df.apply(lambda row: get_text_fiscal_month(row['Fiscal Month']), axis=1)
-
     final_df: pd.DataFrame
     # Guardar el df en la carpeta en linea
     save_path = os.path.join(resources_folder, 'orders_table.xlsx')

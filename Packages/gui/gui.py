@@ -3,6 +3,8 @@ import ctypes
 from Packages.constants import images_folder
 import os
 from ttkbootstrap import Style
+
+from Packages.gui.CalendarWindow.calendar_window import CalendarWindow
 from Packages.gui.ConfigurePercentagesWindow.configure_percentages_window import ConfigurePercentagesWindow
 from Packages.gui.toggle_menu import ToggleMenu
 from Packages.gui.CargasDeMaquinaWindow.cargas_de_maquina_window import CargasDeMaquinaWindow
@@ -40,6 +42,8 @@ class Gui:
         self.cargas_maquina_window.place(relx=0, rely=0.03, relwidth=1, relheight=1-0.03)
         self.configure_perc_window = ConfigurePercentagesWindow(self.root)
         self.configure_perc_window.place(relx=0, rely=0.03, relwidth=1, relheight=1-0.03)
+        self.calendar_window = CalendarWindow(self.root)
+        self.calendar_window.place(relx=0, rely=0.03, relwidth=1, relheight=1-0.03)
         self.cargas_maquina_window.tkraise()
 
     def update(self):
